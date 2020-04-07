@@ -27,11 +27,13 @@ class Checkerboard extends CustomPainter {
       ..strokeWidth = 1.0;
 
     //记录横竖线所有的交叉点
-    if(GameData.crossNodes.isEmpty) {
+    if (GameData.pieces.isEmpty) {
       for (int i = 0; i <= horizontalCount; i++) {
+        List<Piece> list = List();
         for (int j = 0; j <= verticalCount; j++) {
-          GameData.crossNodes.add(CrossNode(eWidth * j, eHeight * i, false));
+          list.add(Piece(eWidth * i, eHeight * j, null, false));
         }
+        GameData.pieces.add(list);
       }
     }
 
@@ -45,10 +47,15 @@ class Checkerboard extends CustomPainter {
     }
 
     paint..style = PaintingStyle.fill;
-    GameData.pieces.forEach((Piece piece) {
-      paint..color = piece.color;
-      canvas.drawCircle(Offset(piece.x, piece.y), eWidth / 3, paint);
-    });
+    for (int i = 0; i <= horizontalCount; i++) {
+      for (int j = 0; j <= verticalCount; j++) {
+        Piece piece = GameData.pieces[i][j];
+        if (piece.exist) {
+          paint..color = piece.color;
+          canvas.drawCircle(Offset(piece.x, piece.y), eWidth / 3, paint);
+        }
+      }
+    }
   }
 
   @override
