@@ -43,6 +43,40 @@ class GameData {
     }
   }
 
+  static Piece ai() {
+    num score;
+    Piece piece;
+    for (int i = 0; i < GameData.pieces.length; i++) {
+      for (int j = 0; j < GameData.pieces[0].length; j++) {
+        piece = GameData.pieces[i][j];
+        if (GameData.pieces[i][j].color == Colors.black) {
+          for (int k = 0; k < 4; k++) {
+            if (j + k >= GameData.pieces[0].length) {
+              break;
+            }
+          }
+        }
+      }
+    }
+    return piece;
+  }
+
+  static num verticallyScore() {
+    num score;
+    for (int i = 0; i < GameData.pieces.length; i++) {
+      for (int j = 0; j < GameData.pieces[0].length; j++) {
+        if (GameData.pieces[i][j].color == Colors.black) {
+          for (int k = 0; k < 4; k++) {
+            if (j + k >= GameData.pieces[0].length) {
+              break;
+            }
+          }
+        }
+      }
+    }
+    return score;
+  }
+
   static bool judgeVictory() {
     bool result = false;
     // 当前下棋的是黑棋

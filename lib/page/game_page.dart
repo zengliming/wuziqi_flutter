@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:wuziqi_flutter/game_data.dart';
 import 'package:wuziqi_flutter/painter/checkerboard_painter.dart';
 
@@ -10,77 +11,92 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
-  var checkerboard = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ];
+
+
+  @override
+  void setState(fn) {
+    if(mounted) {
+      super.setState(fn);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    // 设置状态栏颜色和样式
+    var style = SystemUiOverlayStyle.light.copyWith(
+      // 状态栏颜色
+      statusBarColor: Colors.lightBlueAccent,
+    );
+    SystemChrome.setSystemUIOverlayStyle(style);
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey,
+        color: Colors.white,
       ),
-      child: Center(
-        child: Column(
-          children: <Widget>[
-            Container(
-              height: GameData.topMargin,
-              margin: EdgeInsets.only(bottom: 5.0),
-              decoration: BoxDecoration(color: Colors.amber),
-              child: Align(
-                alignment: Alignment.center,
-                child: GestureDetector(
-                  onTap: () {
-                    GameData.reset();
-                    setState(() {});
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.redAccent,
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Text(
-                      '重置棋盘',
-                      style: TextStyle(
-                        color: Colors.black,
-                        decoration: TextDecoration.none,
-                        fontSize: 18.0,
-                      ),
-                    ),
-                  ),
-                ),
+      child: Scaffold(
+        appBar: _appBar(),
+        body: _body(),
+      ),
+    );
+  }
+  // appbar
+  _appBar() {
+    return AppBar(
+      backgroundColor: Colors.lightBlueAccent,
+      title: Text(
+        '五子棋',
+      ),
+      centerTitle: true,
+    );
+  }
+
+  _body() {
+    return Container(
+      margin: EdgeInsets.only(
+        top: 100.0,
+      ),
+      child: Column(
+        children: <Widget>[
+          GestureDetector(
+            onTapDown: (TapDownDetails d) {
+              // 添加旗子
+              if (!GameData.gameOver) {
+                GameData.addPiece(d.localPosition);
+                setState(() {});
+              }
+            },
+            child: Center(
+              child: CustomPaint(
+                size: Size(330, 330),
+                painter: Checkerboard(horizontalCount: 11, verticalCount: 11),
               ),
             ),
-            GestureDetector(
-              onTapDown: (TapDownDetails d) {
-                print("gameover ${GameData.gameOver}");
-                if (!GameData.gameOver) {
-                  GameData.addPiece(d.localPosition);
-                  setState(() {});
-                }
+          ),
+          _resetButton(),
+        ],
+      ),
+    );
+  }
+
+  // 重置按钮
+  _resetButton() {
+    return Container(
+      height: 40.0,
+      width: 80.0,
+      margin: EdgeInsets.only(
+        top: 60,
+        bottom: 5.0,
+      ),
+      child: RaisedButton(
+        color: Colors.lightBlueAccent,
+        disabledColor: Colors.grey,
+        onPressed: !GameData.gameOver
+            ? null
+            : () {
+                GameData.reset();
+                setState(() {});
               },
-              child: Center(
-                child: CustomPaint(
-                  size: Size(330, 330),
-                  painter: Checkerboard(horizontalCount: 11, verticalCount: 11),
-                ),
-              ),
-            )
-          ],
+        child: Text(
+          '重置',
         ),
       ),
     );
